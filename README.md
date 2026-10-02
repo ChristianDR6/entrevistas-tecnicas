@@ -18,7 +18,14 @@ comprobarla.
 
 ## Cómo usarlo
 
-1. Abrí `entrevistas.html` en el navegador.
+**Desde internet:** <https://christiandr6.github.io/entrevistas-tecnicas/>
+
+**Desde tu disco:** descargá el ZIP, descomprimilo y abrí `index.html`. Los
+cuatro archivos tienen que quedar juntos en la misma carpeta.
+
+Pasos:
+
+1. Abrí `index.html` en el navegador.
 2. Elegí la temática y la dificultad.
 3. Presioná **Iniciar**.
 4. Leé la pregunta, compará con la referencia de arriba.
@@ -60,11 +67,14 @@ OpenAI.
 ## Estructura
 
 ```
-entrevistas.html   estructura de la página
+index.html         estructura de la página
 entrevistas.css    estilos
 entrevistas.js     banco de preguntas, filtros y navegación
 analisis.js        motor de evaluación de respuestas
 ```
+
+El archivo tiene que llamarse `index.html` porque GitHub Pages publica
+automáticamente ese nombre. Si lo cambiás, el sitio deja de funcionar.
 
 No hay build ni dependencias. Para modificar las preguntas, editá el array
 `BANCO` en `entrevistas.js`.
@@ -86,9 +96,15 @@ Cada pregunta es un objeto en el array `BANCO`:
 Las cinco áreas válidas son `lenguajes`, `arquitectura`,
 `ciberseguridad`, `ddd` e `it-general`.
 
-Si agregás preguntas, actualizá también el índice de conceptos del
-evaluador: usa las respuestas existentes para calcular qué término es
-distintivo de cada una. Con muchas preguntas nuevas conviene regenerarlo.
+Las dos versiones de idioma son obligatorias: el evaluador construye su
+índice de conceptos por separado para cada una, así que una respuesta
+faltante deja esa pregunta sin nada que evaluar.
+
+La respuesta de referencia es lo que determina la evaluación: de ella se
+extraen los términos distintivos y de ahí sale la nota. Si es demasiado
+corta, la pregunta tendrá pocos conceptos que buscar y la nota será poco
+significativa. Lo útil son respuestas de dos o tres frases que expliquen la
+decisión y su motivo.
 
 ## Licencia
 
