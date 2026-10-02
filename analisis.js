@@ -154,6 +154,30 @@ function pares(texto) {
   return salida;
 }
 
+/* Igual que terminos(), pero además recuerda con qué forma original apareció
+   cada término: "pasarela" produce el interno "pasarel", y sin este mapa la
+   persona vería "pasarel" en el informe, que no es una palabra.
+
+   Cuando varias formas comparten el mismo interno se guarda la primera. */
+function formasVisibles(texto) {
+  const mapa = {};
+
+  /* Se parte el texto por lo que no es letra ni número, así cada palabra
+     entra con su forma original: tildes y mayúsculas intactas. La clave es
+     la misma forma interna que produce raiz(), que es la que usa el
+     comparador, de modo que las claves coinciden exactamente con las de
+     terminos() aunque aquí no se repita su normalización completa. */
+  for (const palabra of String(texto).split(/[^\p{L}\p{N}]+/u)) {
+    if (!palabra) continue;
+    const interno = raiz(palabra.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""));
+    if (interno.length < 3 || VACIAS.has(interno)) continue;
+    if (!Object.prototype.hasOwnProperty.call(mapa, interno)) {
+      mapa[interno] = palabra;
+    }
+  }
+  return mapa;
+}
+
 
 /* =========================================================================
    3. ÍNDICE DE CONCEPTOS
@@ -168,19 +192,36 @@ function pares(texto) {
 const IndiceConceptos = (() => {
 
   /* El índice se construye la primera vez que se usa, no al cargar el
-     archivo. Así este módulo no exige que BANCO ya exista. */
-  let cache = null;
+     archivo. Así este módulo no exige que BANCO ya exista.
 
-  function construir() {
-    if (cache) return cache;
+     Hay un índice por idioma. Es necesario: los conceptos que se buscan en tu
+     respuesta tienen que ser los de la referencia del idioma en el que estás
+     practicando. Con un único índice en español, al evaluar en inglés no se
+     encontraría ningún concepto y la cobertura siempreería cero. */
+  const caches = {};
 
-    /* Para cada pregunta: sus términos y sus pares, ya normalizados. */
-    const porPregunta = BANCO.map(p => ({
-      terminos: terminos(p.es.a),
-      pares:    pares(p.es.a)
-    }));
+  /* Cualquier valor que no sea "en" se trata como español, que es el
+     comportamiento anterior y el que espera el resto del código. */
+  function normalizarIdioma(idioma) {
+    return idioma === "en" ? "en" : "es";
+  }
 
-    /* Cuenta en cuántas respuestas aparece cada término. */
+  function construir(idioma) {
+    const lang = normalizarIdioma(idioma);
+    if (caches[lang]) return caches[lang];
+
+    /* Para cada pregunta: sus términos y sus pares, ya normalizados,
+       tomados de la respuesta del idioma que se está evaluando. */
+    const porPregunta = BANCO.map(p => {
+      const texto = (p[lang] && p[lang].a) || p.es.a;
+      return {
+        terminos: terminos(texto),
+        pares:    pares(texto),
+        visibles: formasVisibles(texto)
+      };
+    });
+
+    /* Cuenta en cuántas respuestas aparece cada término, dentro del idioma. */
     const documentos = {};
     for (const item of porPregunta) {
       for (const t of new Set(item.terminos)) {
@@ -188,14 +229,14 @@ const IndiceConceptos = (() => {
       }
     }
 
-    cache = { porPregunta, documentos, totalDocumentos: porPregunta.length };
-    return cache;
+    caches[lang] = { porPregunta, documentos, totalDocumentos: porPregunta.length };
+    return caches[lang];
   }
 
   /* Devuelve los conceptos más distintivos de una respuesta, ordenados por
-     peso. Se usa la versión en español como referencia estable. */
-  function conceptosDe(indice, cantidad) {
-    const { porPregunta, documentos, totalDocumentos } = construir();
+     peso. Son los de la referencia en el idioma indicado. */
+  function conceptosDe(indice, cantidad, idioma) {
+    const { porPregunta, documentos, totalDocumentos } = construir(idioma);
     const item = porPregunta[indice];
     if (!item) return [];
 
@@ -220,9 +261,10 @@ const IndiceConceptos = (() => {
       .map(([termino]) => termino);
   }
 
-  /* Vector de pesos de un texto cualquiera, para comparar por coseno. */
-  function vectorDe(texto) {
-    const { documentos, totalDocumentos } = construir();
+  /* Vector de pesos de un texto cualquiera, para comparar por coseno. La
+     rareza se mide contra las referencias del mismo idioma. */
+  function vectorDe(texto, idioma) {
+    const { documentos, totalDocumentos } = construir(idioma);
     const vector = new Map();
     for (const t of terminos(texto)) {
       const rareza = Math.log(totalDocumentos / (documentos[t] || totalDocumentos)) + 1;
@@ -232,11 +274,28 @@ const IndiceConceptos = (() => {
   }
 
   /* Términos normalizados de una respuesta de referencia. */
-  function terminosDe(indice) {
-    return construir().porPregunta[indice];
+  function terminosDe(indice, idioma) {
+    return construir(idioma).porPregunta[indice];
   }
 
-  return { conceptosDe, vectorDe, terminosDe, construir };
+  /* Traduce un término interno a la forma en que aparece escrito en la
+     respuesta de referencia. Si no lo encuentra, lo devuelve como estaba:
+     es preferible mostrar un término raro antes que una palabra inventada.
+
+     Un par de términos ("indice unico") se traduce parte por parte. */
+  function formaDe(indice, interno, idioma) {
+    const item = construir(idioma).porPregunta[indice];
+    if (!item) return interno;
+    if (interno.includes(" ")) {
+      return interno
+        .split(" ")
+        .map(t => item.visibles[t] || t)
+        .join(" ");
+    }
+    return item.visibles[interno] || interno;
+  }
+
+  return { conceptosDe, vectorDe, terminosDe, formaDe, construir };
 })();
 
 
@@ -280,14 +339,13 @@ function similitudCoseno(a, b) {
      - detalle:     las cosas que vale la pena mirar
    ========================================================================= */
 
-/* Convierte un término interno en algo legible para la persona. */
-function legible(termino) {
-  return termino;
-}
-
 function evaluarLocal(respuestaUsuario, indicePregunta, idioma) {
   const pregunta = BANCO[indicePregunta];
   if (!pregunta) return null;
+
+  /* Si no se indica idioma, se evalúa contra la referencia en español. */
+  const lang = (idioma === "en" && pregunta.en) ? "en" : "es";
+  idioma = lang;
 
   const referencia = pregunta[idioma].a;
   const mio = String(respuestaUsuario || "").trim();
@@ -307,8 +365,9 @@ function evaluarLocal(respuestaUsuario, indicePregunta, idioma) {
     };
   }
 
-  /* --- Conceptos clave de la respuesta de referencia --- */
-  const conceptos = IndiceConceptos.conceptosDe(indicePregunta, 14);
+  /* --- Conceptos clave de la respuesta de referencia, en el idioma que
+         se está practicando --- */
+  const conceptos = IndiceConceptos.conceptosDe(indicePregunta, 14, idioma);
 
   /* --- Qué conceptos aparecen en lo que escribiste --- */
   const mioTerminos = new Set(terminos(mio));
@@ -325,7 +384,7 @@ function evaluarLocal(respuestaUsuario, indicePregunta, idioma) {
   }
 
   /* --- Términos que usaste y no están en la respuesta de referencia --- */
-  const refTerms = IndiceConceptos.terminosDe(indicePregunta);
+  const refTerms = IndiceConceptos.terminosDe(indicePregunta, idioma);
   const referenciaTerminos = new Set(refTerms.terminos);
   const referenciaPares = new Set(refTerms.pares);
   const sobrantes = [...mioTerminos]
@@ -333,12 +392,18 @@ function evaluarLocal(respuestaUsuario, indicePregunta, idioma) {
     .filter(t => ![...mioPares].some(p => p.endsWith(" " + t)))
     .slice(0, 8);
 
+  /* --- De término interno a palabra, para mostrarlo en el informe ---
+     Los conceptos salen de la referencia; los sobrantes salen de lo que
+     escribiste vos. Cada lista se traduce con su propio mapa. */
+  const forma = t => IndiceConceptos.formaDe(indicePregunta, t, idioma);
+  const mioVisibles = formasVisibles(mio);
+
   const cobertura = conceptos.length ? hallados.length / conceptos.length : 0;
 
   /* --- Similitud global entre las dos respuestas --- */
   const similitud = similitudCoseno(
-    IndiceConceptos.vectorDe(mio),
-    IndiceConceptos.vectorDe(referencia)
+    IndiceConceptos.vectorDe(mio, idioma),
+    IndiceConceptos.vectorDe(referencia, idioma)
   );
 
   /* --- Penalización por longitud --- */
@@ -392,9 +457,9 @@ function evaluarLocal(respuestaUsuario, indicePregunta, idioma) {
     cobertura: Math.round(cobertura * 100),
     similitud: Math.round(similitud * 100),
     coberturaDecimal: cobertura,
-    hallados: hallados.map(legible),
-    faltantes: faltantes.map(legible),
-    sobrantes: sobrantes.map(legible),
+    hallados: hallados.map(forma),
+    faltantes: faltantes.map(forma),
+    sobrantes: sobrantes.map(t => mioVisibles[t] || t),
     longitud, palabras,
     detalle: detalles
   };
