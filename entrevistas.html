@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preparador de entrevistas técnicas</title>
+  <link rel="stylesheet" href="entrevistas.css">
+</head>
+<body>
+
+<div class="envoltorio">
+
+  <!-- ================= Encabezado ================= -->
+  <header class="encabezado">
+    <h1 id="titulo">Preparador de entrevistas técnicas</h1>
+    <p class="subtitulo" id="subtitulo"></p>
+  </header>
+
+  <!-- ================= Selector de idioma ================= -->
+  <div class="panel">
+    <div class="filtros">
+      <span class="etiqueta" id="etiqueta-idioma">Idioma</span>
+      <button id="btn-es" onclick="app.cambiarIdioma('es')">Español</button>
+      <button id="btn-en" onclick="app.cambiarIdioma('en')">English</button>
+    </div>
+  </div>
+
+  <!-- ================= Paso 1: elegir qué repasar ================= -->
+  <div class="panel">
+    <div class="filtros">
+      <span class="etiqueta" id="etiqueta-area">Temática</span>
+      <select id="filtro-area">
+        <option value=""></option>
+      </select>
+
+      <span class="separador"></span>
+
+      <span class="etiqueta" id="etiqueta-dificultad">Dificultad</span>
+      <select id="filtro-dificultad">
+        <option value=""></option>
+        <option value="basico"></option>
+        <option value="medio"></option>
+        <option value="avanzado"></option>
+      </select>
+
+      <span class="separador"></span>
+
+      <button class="principal" id="btn-iniciar" onclick="app.iniciar()"></button>
+    </div>
+  </div>
+
+  <!-- ================= Paso 2: la pregunta ================= -->
+  <div id="panel-preguntas" class="oculto">
+    <div class="panel">
+      <div class="filtros">
+        <button id="btn-siguiente" onclick="app.siguiente()"></button>
+        <button id="btn-respuesta" onclick="app.mostrarRespuesta()"></button>
+        <button id="btn-favorita" onclick="app.alternarFavorita()"></button>
+        <button id="btn-reiniciar" onclick="app.reiniciar()"></button>
+        <button id="btn-cambiar" onclick="app.cerrar()"></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="estadisticas">
+        <span><span id="etiqueta-disponibles">Disponibles</span>: <b id="stat-disponibles">0</b></span>
+        <span><span id="etiqueta-vistas">Vistas</span>: <b id="stat-vistas">0</b></span>
+        <span><span id="etiqueta-total">Total</span>: <b id="stat-total">0</b></span>
+        <span><span id="etiqueta-favoritas">Favoritas</span>: <b id="stat-favoritas">0</b></span>
+      </div>
+    </div>
+
+    <div id="tarjeta"></div>
+  </div>
+
+  <!-- ================= Ayuda ================= -->
+  <div class="panel nota">
+    <b id="titulo-ayuda">Cómo usarlo:</b>
+    <span id="texto-ayuda"></span>
+  </div>
+
+</div>
+
+<!-- El motor de evaluacion no depende del orden: construye su indice
+     la primera vez que se usa. -->
+<script src="analisis.js"></script>
+<script src="entrevistas.js"></script>
+</body>
+</html>

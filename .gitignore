@@ -1,0 +1,28 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Thumbs.db:encrypt
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node: no hay build, pero por si alguien instala algo
+node_modules/
+npm-debug.log*
+
+# Archivos locales de pruebas
+*.tmp
+*.bak
+prueba*.html
+diag*.html
+
+# Documentacion personal, ajena al proyecto
+GIT-COMANDOS.txt
+PERMISOS-CHRIS.txt
+SUBIR-A-GITHUB.txt
+informe-*.html
+publicar-github.bat

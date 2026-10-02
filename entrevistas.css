@@ -1,0 +1,390 @@
+/* =========================================================================
+   interviews.css
+   Estilos del preparador de entrevistas técnicas.
+   Una hoja de estilos, organizada por bloques del documento.
+   ========================================================================= */
+
+/* --- Variables: colores y medidas reutilizables ------------------------- */
+:root {
+  --fondo:        #0f1720;
+  --panel:        #161d26;
+  --panel-borde:  #232d3a;
+  --campo:        #1e2733;
+  --campo-borde:  #2d3a49;
+  --texto:        #e6edf3;
+  --texto-suave:  #8b98a5;
+  --texto-tenue:  #6b7683;
+  --acento:       #1f6feb;
+  --acento-claro: #7fb3ff;
+  --verde:        #15803d;
+  --ambar:        #d97706;
+  --rojo:         #b91c1c;
+
+  --radio: 10px;
+  --radio-chico: 6px;
+  --ancho-max: 940px;
+}
+
+/* --- Base ---------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.envoltorio {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+}
+
+/* --- Encabezado ---------------------------------------------------------- */
+.encabezado h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  color: #fff;
+}
+
+.encabezado .subtitulo {
+  margin: 0 0 20px;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+/* --- Paneles ------------------------------------------------------------- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-borde);
+  border-radius: var(--radio);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+/* --- Fila de filtros ----------------------------------------------------- */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.filtros .etiqueta {
+  margin-right: 4px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Separador vertical entre grupos de filtros */
+.filtros .separador {
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  background: var(--campo-borde);
+}
+
+/* --- Controles ----------------------------------------------------------- */
+select,
+button {
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--texto);
+  background: var(--campo);
+  border: 1px solid var(--campo-borde);
+  border-radius: var(--radio-chico);
+  cursor: pointer;
+}
+
+select:hover,
+button:hover {
+  background: #263241;
+  border-color: #3d4d60;
+}
+
+button.principal {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: #fff;
+  font-weight: 600;
+}
+
+button.principal:hover {
+  background: #2a7cf5;
+}
+
+button.activo {
+  border-color: var(--acento-claro);
+  color: var(--acento-claro);
+}
+
+/* --- Estadísticas -------------------------------------------------------- */
+.estadisticas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.estadisticas b {
+  color: var(--texto);
+}
+
+/* --- Distintivos de area, nivel y sub-tema ------------------------------ */
+.distintivo {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: 10px;
+  background: #2a2a35;
+  color: #b0b8c4;
+}
+
+.distintivo.area-lenguajes       { background: #1f3a5f; color: #7fb3ff; }
+.distintivo.area-arquitectura    { background: #3d2a5f; color: #b39ddb; }
+.distintivo.area-ciberseguridad { background: #4a1f1f; color: #ff8a8a; }
+.distintivo.area-ddd             { background: #1d3d2e; color: #6fcf97; }
+.distintivo.area-it-general      { background: #3d331f; color: #e0b062; }
+
+.distintivo.nivel-basico    { background: #1d3d2e; color: #8fd6a8; }
+.distintivo.nivel-medio     { background: #4a3a1f; color: #e8c06a; }
+.distintivo.nivel-avanzado  { background: #4a1f1f; color: #ff8a8a; }
+
+.etiqueta-tema {
+  font-size: 11px;
+  color: var(--texto-tenue);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* --- Tarjeta de la pregunta ---------------------------------------------- */
+.tarjeta .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pregunta {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* --- Respuesta ----------------------------------------------------------- */
+.respuesta {
+  padding: 12px 14px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  background: #0d1b2a;
+  border-left: 3px solid var(--acento);
+  border-radius: 0 var(--radio-chico) var(--radio-chico) 0;
+}
+
+.respuesta .rotulo {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--acento-claro);
+}
+
+/* Las preguntas avanzadas y de límites se destacan: conviene responderlas
+   con honestidad sobre las carencias, no con justificaciones. */
+.respuesta.destacada {
+  background: #2a1f0d;
+  border-left-color: var(--ambar);
+}
+
+.respuesta.destacada .rotulo {
+  color: #e8b06a;
+}
+
+/* --- Navegación ---------------------------------------------------------- */
+.navegacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* --- Sección de respuesta propia ---------------------------------------- */
+.evaluacion {
+  border-top: 2px solid var(--campo-borde);
+  padding-top: 16px;
+  margin-top: 18px;
+}
+
+.evaluacion .rotulo-seccion {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--acento-claro);
+}
+
+textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--campo);
+  border: 1px solid var(--campo-borde);
+  border-radius: var(--radio-chico);
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--acento);
+}
+
+/* --- Resultado de la evaluación ------------------------------------------ */
+.resultado {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--campo);
+  border: 1px solid var(--campo-borde);
+  border-left-width: 3px;
+  border-radius: 0 var(--radio-chico) var(--radio-chico) 0;
+}
+
+.resultado.sin-intentar { border-left-color: var(--texto-tenue); }
+.resultado.muy-baja     { border-left-color: #b91c1c; }
+.resultado.baja         { border-left-color: #d97706; }
+.resultado.parcial      { border-left-color: #eab308; }
+.resultado.solida       { border-left-color: #15803d; }
+
+.resultado .titulo-resultado {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.medidores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.medidor { min-width: 110px; }
+.medidor .valor { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.2; }
+.medidor .nombre { font-size: 11px; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.4px; }
+
+/* Barra de progreso del porcentaje */
+.barra {
+  height: 5px;
+  margin-top: 5px;
+  background: #0d1b2a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.barra span { display: block; height: 100%; background: var(--acento); border-radius: 3px; }
+
+.lista-resultado {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+.lista-resultado li { margin-bottom: 3px; }
+
+.etiqueta-concepto {
+  display: inline-block;
+  margin: 2px 3px 2px 0;
+  padding: 2px 7px;
+  font-size: 11.5px;
+  background: #0d1b2a;
+  border: 1px solid var(--campo-borde);
+  border-radius: 9px;
+  color: #9fb0c0;
+}
+.etiqueta-concepto.falta { border-color: #7f1d1d; color: #f0a0a0; }
+.etiqueta-concepto.sobra { border-color: #713f12; color: #e8c07a; }
+
+.nota-metodo {
+  margin-top: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  background: #0d1b2a;
+  border-radius: var(--radio-chico);
+}
+
+.ia-opcional {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--campo-borde);
+}
+
+.ia-opcional input[type="password"] {
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--texto);
+  background: var(--campo);
+  border: 1px solid var(--campo-borde);
+  border-radius: var(--radio-chico);
+  width: 260px;
+  max-width: 100%;
+}
+
+/* --- Estado vacío -------------------------------------------------------- */
+.vacio {
+  padding: 40px 20px;
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+/* --- Ocultar el panel de preguntas hasta pulsar Iniciar ----------------- */
+.oculto {
+  display: none;
+}
+
+/* --- Nota de ayuda ------------------------------------------------------- */
+.nota {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+}
+
+.nota b {
+  color: #b0b8c4;
+}
+
+kbd {
+  padding: 1px 5px;
+  font-size: 11px;
+  background: var(--campo);
+  border: 1px solid var(--campo-borde);
+  border-radius: 3px;
+}
+
+/* --- Pantallas angostas -------------------------------------------------- */
+@media (max-width: 640px) {
+  body { padding: 14px; }
+  .filtros .separador { display: none; }
+  .pregunta { font-size: 16px; }
+  .estadisticas { gap: 12px; font-size: 12px; }
+}
