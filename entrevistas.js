@@ -33,12 +33,12 @@ const BANCO = [
     areaTema: "arquitectura",
     nivel: "medio",
     es: {
-      q: "¿Por qué SQLite y no PostgreSQL?",
-      a: "Decisión deliberada para validar la lógica de negocio y las invariantes antes de elegir motor. Lo documenté explícitamente en la compuerta de producción: el sistema rechaza `postgresql` y `multi-instance` porque no hay adaptador verificado. No es que SQLite no sirva, es que no puedo afirmar una capacidad que no medí. Con una sola instancia puede evaluarse para producción si pasa la prueba de carga del entorno destino."
+      q: "Elegiste un motor embebido para un sistema que después quizá necesite escalar. ¿Cómo se justifica esa decisión?",
+      a: "Decisión deliberada para validar la lógica de negocio y las invariantes antes de elegir motor. No es que el motor embebido no sirva, es que no puedo afirmar una capacidad que no medí. Lo dejo explícito en la configuración: el despliegue por defecto es de una sola instancia, y el modo multiproceso está bloqueado hasta que exista un adaptador de persistencia verificado. Si el volumen lo justifica, se cambia el motor; lo que no hago es prometer escalabilidad sin haberla probado con carga real del entorno destino."
     },
     en: {
-      q: "Why SQLite and not PostgreSQL?",
-      a: "A deliberate decision to validate the business logic and the invariants before choosing an engine. I documented it explicitly in the production gate: the system rejects `postgresql` and `multi-instance` because there is no verified adapter. It is not that SQLite does not work, it is that I cannot claim a capability I have not measured. With a single instance it can be evaluated for production if it passes a load test on the target environment."
+      q: "You picked an embedded engine for a system that may later need to scale. How do you justify that decision?",
+      a: "A deliberate decision to validate the business logic and the invariants before choosing an engine. It is not that the embedded engine does not work, it is that I cannot claim a capability I have not measured. I make it explicit in configuration: the default deployment is single-instance, and multi-process mode is blocked until a verified persistence adapter exists. If the volume justifies it, I change the engine; what I do not do is promise scalability without having tested it under real load on the target environment."
     }
   },
   {
@@ -47,11 +47,11 @@ const BANCO = [
     nivel: "avanzado",
     es: {
       q: "¿Qué es un Bounded Context y cómo lo aplicaste?",
-      a: "Un límite donde un modelo tiene un significado propio. En un proyecto de trazabilidad que dirigí había 26 contextos. El ejemplo concreto: el despachador de autorizaciones fiscales está marcado en el código como *trabajador técnico*, explícitamente NO es un Domain Service ni un Aggregate Root, porque gobierna la persistencia de solicitudes, no reglas de negocio. Esa distinción es la que evita que un servicio técnico crezca hasta convertirse en el centro de todo."
+      a: "Un límite donde un modelo tiene un significado propio. Un límite donde un modelo tiene su propio vocabulario y sus propias invariantes. Lo aplico por lo que protege, no por lo que contiene: el ejemplo es un despachador que coordina autorizaciones y está marcado en el código como *trabajador técnico*, explícitamente NO es un Domain Service ni un Aggregate Root, porque gobierna la persistencia de solicitudes y no reglas de negocio. Esa distinción es la que evita que un servicio técnico crezca hasta convertirse en el centro de todo."
     },
     en: {
       q: "What is a Bounded Context and how did you apply it?",
-      a: "A boundary within which a model has its own meaning. In a traceability project I worked on there were 26 contexts. The concrete example: the fiscal authorisation dispatcher is marked in the code as a *technical worker*, explicitly NOT a Domain Service nor an Aggregate Root, because it governs the persistence of requests, not business rules. That distinction is what stops a technical service from growing until it becomes the centre of everything."
+      a: "A boundary within which a model has its own meaning. A boundary where a model has its own vocabulary and its own invariants. I apply it for what it protects, not for what it contains: the example is a dispatcher that coordinates authorisations and is marked in the code as a *technical worker*, explicitly NOT a Domain Service nor an Aggregate Root, because it governs the persistence of requests and not business rules. That distinction is what stops a technical service from growing until it becomes the centre of everything."
     }
   },
   {
@@ -85,12 +85,12 @@ const BANCO = [
     areaTema: "arquitectura",
     nivel: "avanzado",
     es: {
-      q: "¿Por qué la compuerta de producción es código y no un checklist?",
-      a: "Porque un checklist se puede completar mintiendo o por error. En el servicio de preparación productiva el control del adaptador fiscal está fijado en `false` de forma permanente. No hay bandera ni configuración que lo habilite. Es estructuralmente imposible declarar producción lista mientras no exista el adaptador real de ARCA. Un revisor no tiene que confiar en mí: lo lee en el código."
+      q: "¿Por qué una condición de salida a producción la implementarías como código y no como checklist?",
+      a: "Porque un checklist se puede completar mintiendo o por error: no deja rastro de quién decidió qué, ni se puede verificar automáticamente. Si una capacidad no está implementada, la condición va en código con el valor fijado en `false` y sin bandera ni configuración que la habilite. While tanto no exista el adaptador real, es estructuralmente imposible que el sistema se declare listo. El revisor no tiene que confiar en mí ni hacer un interrogatorio: lo lee en el código y corre el test que lo comprueba."
     },
     en: {
-      q: "Why is the production gate code and not a checklist?",
-      a: "Because a checklist can be completed dishonestly or by mistake. In the production readiness service, the fiscal adapter check is permanently set to `false`. There is no flag or setting that enables it. It is structurally impossible to declare production ready while the real ARCA adapter does not exist. A reviewer does not have to trust me: they read it in the code."
+      q: "Why would you implement a production release condition as code rather than as a checklist?",
+      a: "Because a checklist can be completed dishonestly or by mistake: it leaves no record of who decided what, and it cannot be verified automatically. If a capability is not implemented, the condition goes in code with the value fixed at `false` and no flag or setting that enables it. Until the real adapter exists, it is structurally impossible for the system to declare itself ready. The reviewer does not have to trust me or interview me: they read it in the code and run the test that checks it."
     }
   },
   {
@@ -98,12 +98,12 @@ const BANCO = [
     areaTema: "arquitectura",
     nivel: "basico",
     es: {
-      q: "Contame el recorrido completo de un sistema de trazabilidad de producción.",
-      a: "Recepción de material, producción, lote, liberación, venta, cobro, comprobante fiscal, entrega y traslado. Y desde la venta se puede trazar inversamente hasta la recepción de origen. Eso último es lo que define al producto: no es un registro, es responder de dónde salió una cosa concreta."
+      q: "Contame el recorrido completo de un sistema de trazabilidad, y por qué esa trazabilidad invierte el sentido de la lectura.",
+      a: "Recepción de material, producción, lote, liberación, venta, cobro, comprobante fiscal, entrega y traslado. Y desde la venta se puede trazar inversamente hasta la recepción de origen. Eso último es lo que define al problema: no es un registro, es responder de dónde salió una cosa concreta. Esa inversión de la lectura es la que define el modelo: cada paso deja una traza al anterior, y esa traza es un dato de negocio, no un log."
     },
     en: {
-      q: "Walk me through the complete flow of a production traceability system.",
-      a: "Material reception, production, batch, release, sale, collection, fiscal receipt, delivery and transfer. And from the sale you can trace backwards to the original reception. That last part is what defines the product: it is not a log, it is answering where a specific thing came from."
+      q: "Walk me through the complete flow of a traceability system, and why that traceability inverts the direction of reading.",
+      a: "Material reception, production, batch, release, sale, collection, fiscal receipt, delivery and transfer. And from the sale you can trace backwards to the original reception. That last part is what defines the problem: it is not a log, it is answering where a specific thing came from. That inversion in the reading is what shapes the model: each step leaves a trace to the previous one, and that trace is business data, not a log."
     }
   },
   {
@@ -124,12 +124,12 @@ const BANCO = [
     areaTema: "arquitectura",
     nivel: "avanzado",
     es: {
-      q: "¿Cómo escalarías esto a varias instancias?",
-      a: "No puedo hacerlo hoy, y el sistema lo dice. Habría que escribir un adaptador de persistencia nuevo, migrar los datos y probar concurrencia real entre procesos. La decisión está documentada: SQLite con una sola instancia, y el sistema rechaza la configuración multi-instance. Es la respuesta honesta."
+      q: "Un sistema con una sola instancia tiene una capacidad acotada. ¿Qué necesitás para escalarlo a varias?",
+      a: "No se puede hacerlo sin trabajo previo, y conviene que el sistema lo diga en vez de fingir que escala. Habría que escribir un adaptador de persistencia nuevo, migrar los datos y probar concurrencia real entre procesos, que es la parte que casi siempre falta: los bloqueos que en un proceso se resuelven solos, entre dos procesos se convierten en carreras. El despliegue por defecto queda en una sola instancia, y el modo multiproceso bloqueado hasta que exista ese adaptador. Es la respuesta honesta."
     },
     en: {
-      q: "How would you scale this to several instances?",
-      a: "I cannot do that today, and the system says so. It would require writing a new persistence adapter, migrating the data, and testing real concurrency between processes. The decision is documented: SQLite with a single instance, and the system rejects multi-instance configuration. That is the honest answer."
+      q: "A single-instance system has a bounded capacity. What would you need in order to scale it to several?",
+      a: "It cannot be done without prior work, and the system should say so rather than pretend it scales. It would require writing a new persistence adapter, migrating the data, and testing real concurrency between processes, which is the part almost always missing: what locks resolve on their own in one process become races across two. The default deployment stays at one instance, and multi-process mode stays blocked until that adapter exists. That is the honest answer."
     }
   },
   {
@@ -436,11 +436,11 @@ const BANCO = [
     nivel: "avanzado",
     es: {
       q: "¿Qué harías distinto si esto tuviera usuarios de internet?",
-      a: "El modelo de amenazas cambia. Ahora confío en la red local y en el gateway. Con usuarios reales agregaría rotación de claves de credenciales, limitación de tasa distribuida, CSP con nonces, y sobre todo monitoreo. La base SQLite y el respaldo diario local no alcanzan: haría falta un respaldo externo y verificable, que de hecho es una de las condiciones de la compuerta de producción."
+      a: "El modelo de amenazas cambia. Ahora confío en la red local y en el gateway. Con usuarios reales agregaría rotación de claves de credenciales, limitación de tasa distribuida, CSP con nonces, y sobre todo monitoreo. Y el respaldo local diario no alcanza: haría falta uno externo y verificable, más una prueba de restauración. Un respaldo que nunca se restauró es una hipótesis, no un respaldo."
     },
     en: {
       q: "What would you do differently if this had users on the internet?",
-      a: "The threat model changes. Right now I trust the local network and the gateway. With real users I would add credential key rotation, distributed rate limiting, CSP with nonces, and above all monitoring. A SQLite database and a local daily backup are not enough: I would need an external, verified backup, which is in fact one of the production gate conditions."
+      a: "The threat model changes. Right now I trust the local network and the gateway. With real users I would add credential key rotation, distributed rate limiting, CSP with nonces, and above all monitoring. And a local daily backup is not enough: I would need an external, verified one, plus a restore drill. A backup that has never been restored is a hypothesis, not a backup."
     }
   },
 
@@ -573,12 +573,12 @@ const BANCO = [
     areaTema: "ddd",
     nivel: "avanzado",
     es: {
-      q: "¿Por qué decidiste NO cambiar el recuento de contextos?",
-      a: "Porque el recuento oficial es parte del entregable aprobado. Cuando el incremento P04.2 sugiere un Process Manager nuevo, lo dejé como propuesta en lugar de alterar el número, y el documento lo dice explícitamente: el recuento no se altera sin aprobación. El diseño no se maquilla para que el número quede lindo."
+      q: "Aplicaste DDD a un diseño y el resultado fue un número alto de contextos. ¿Cuál es la razón por la cual eliminar alguno sería incorrecta?",
+      a: "Porque el número es consecuencia de los límites que cada contexto protege, no un objetivo en sí mismo. Un contexto existe si custodia invariantes que no se pueden garantizar en otro lado; si lo elimino sin trasladar esas invariantes, alguien termina comprobándolas en el lugar equivocado y el modelo deja de proteger lo que protege. Un criterio concreto para dudar de un límite: si dos contextos necesitan el mismo dato, ese dato no debería tener un dueño único, sino una traducción en cada borde. Si borrás un contexto y tenés que mover su dato a un vecino que ya tenía otro propósito, lo que en realidad estás haciendo es juntar dos modelos con significados distintos. Prefiero dejar el límite y documentar que se revisa, antes que maquillar el recuento."
     },
     en: {
-      q: "Why did you decide NOT to change the context count?",
-      a: "Because the official count is part of the approved deliverable. When increment P04.2 suggested a new Process Manager, I left it as a proposal rather than altering the number, and the document says so explicitly: the count is not changed without approval. The design is not cosmetically adjusted to make the number look good."
+      q: "You applied DDD to a design and ended up with a high number of contexts. What would make removing one of them incorrect?",
+      a: "Because the number is a consequence of the boundaries each context protects, not a goal in itself. A context exists if it guards invariants that cannot be guaranteed elsewhere; if I remove it without moving those invariants, someone ends up checking them in the wrong place and the model stops protecting what it was protecting. A concrete test for doubting a boundary: if two contexts need the same data, that data should not have a single owner but a translation at each edge. If deleting a context means moving its data into a neighbour that already had a different purpose, what you are really doing is merging two models with different meanings. I would rather keep the boundary and document that it should be revisited than adjust the design to make the count look better."
     }
   },
   {
@@ -1040,12 +1040,12 @@ const BANCO = [
     areaTema: "fiscal",
     nivel: "basico",
     es: {
-      q: "¿Qué necesito para habilitar la facturación?",
-      a: "Por club: habilitar el servicio web, tener certificado y clave de su identificación fiscal, crear un punto de venta para servicios web, completar razón social, domicilio, condición impositiva, ingresos brutos e inicio de actividades, y definir el tipo de comprobante. Se prueba en homologación primero, y a producción se pasa solo con aprobación del responsable contable."
+      q: "¿Qué necesitás para emitir facturas electrónicas contra un proveedor real, y por qué se empieza por un entorno de pruebas?",
+      a: "Habilitar el servicio web, tener el certificado y la clave de la identificación fiscal, crear un punto de venta para servicios web, completar los datos registrales y definir el tipo de comprobante. Se prueba primero contra el entorno de homologación, y a producción se pasa con el circuito completo ya ejercido y con aprobación de quien responde por la contabilidad. El orden importa: el entorno de pruebas tiene respuestas distintas, así que pasar a producción sin haber visto las de verdad es cambiar de sistema sin darme cuenta."
     },
     en: {
-      q: "What do I need to enable invoicing?",
-      a: "Per club: enable the web service, have the certificate and key for its tax id, create a point of sale for web services, complete the legal name, address, tax condition, gross income and start of activities, and define the receipt type. It is tested in the test environment first, and production is only reached with accounting sign-off."
+      q: "What do you need in order to issue electronic invoices against a real provider, and why do you start in a test environment?",
+      a: "Enable the web service, have the certificate and key for the tax id, create a point of sale for web services, complete the registration data and define the receipt type. You exercise it first against the test environment, and you reach production only with the full circuit already run and sign-off from whoever owns the accounting. The order matters: the test environment returns different responses, so going to production without having seen the real ones is changing systems without noticing."
     }
   },
 
@@ -1191,12 +1191,12 @@ const BANCO = [
     areaTema: "proceso",
     nivel: "avanzado",
     es: {
-      q: "¿Por qué el autoregistro no verifica el correo?",
-      a: "Porque en la demostración es directo, y eso es una decisión consciente de demo, no de producción. El alta abierta crea un socio activo sin verificar la titularidad del correo ni pedir aprobación administrativa. Está documentado que hay que definir ese circuito antes de abrir un club real, porque cualquiera podría dar de alta a otro con su correo."
+      q: "¿Por qué un autoregistro abierto sin verificación de correo es aceptable en una demostración y no en producción?",
+      a: "Porque en una demostración es directo, y eso es una decisión consciente de demo, no de producción. El alta abierta crea un usuario activo sin verificar la titularidad del correo ni pedir aprobación. El circuito tiene que definirse antes de abrir a reales, porque cualquiera podría dar de alta a otro con su correo. Lo que hace el código es dejar constancia: el modo abierto está disponible solo con la verificación desactivada de forma explícita, y activar el circuito verificado es un cambio de configuración que deja rastro. Así la diferencia entre demo y producción no depende de que alguien se acuerde."
     },
     en: {
-      q: "Why does self-registration not verify the email?",
-      a: "Because in the demo it is direct, and that is a conscious demo decision, not a production one. Open sign-up creates an active member without verifying email ownership or requesting administrative approval. It is documented that this circuit must be defined before opening a real club, because anyone could register someone else with their email."
+      q: "Why is open self-registration without email verification acceptable in a demo but not in production?",
+      a: "Because in a demo it is direct, and that is a conscious demo decision, not a production one. Open sign-up creates an active user without verifying email ownership or requesting approval. The circuit has to be defined before opening to real people, because anyone could register someone else with their email. What the code does is leave a record: the open mode is available only with verification explicitly disabled, and switching on the verified circuit is a configuration change that shows up. That way the difference between demo and production does not depend on someone remembering."
     }
   },
   {
@@ -1671,11 +1671,11 @@ const BANCO = [
     nivel: "basico",
     es: {
       q: "Contame sobre un proyecto del que estés orgulloso.",
-      a: "Un sistema de trazabilidad de producción con 26 contextos acotados. Lo que más me gusta no es el volumen sino una decisión de diseño: el control de producción está fijado en falso en el código, de forma permanente. No es una lista de verificación que alguien pueda completar por error. Escribí el sistema para que no pueda mentir sobre su propio estado."
+      a: "Un sistema de trazabilidad de producción, modelado con contextos acotados. Lo que más me gusta no es el volumen sino una decisión de diseño: la condición de salida a producción está fijada en falso en el código, de forma permanente. No es una lista de verificación que alguien pueda completar por error. Escribí el sistema para que no pueda mentir sobre su propio estado."
     },
     en: {
       q: "Tell me about a project you are proud of.",
-      a: "A production traceability system with 26 bounded contexts. What I like most is not the volume but a design decision: the production check is permanently set to false in the code. It is not a checklist someone could complete by mistake. I wrote the system so that it cannot lie about its own state."
+      a: "A production traceability system, modelled with bounded contexts. What I like most is not the volume but a design decision: the production release condition is permanently set to false in the code. It is not a checklist someone could complete by mistake. I wrote the system so that it cannot lie about its own state."
     }
   },
   {
@@ -1895,12 +1895,12 @@ const BANCO = [
     areaTema: "limites",
     nivel: "avanzado",
     es: {
-      q: "¿Qué no probarías en producción todavía?",
-      a: "No tocaría pagos reales ni facturación hasta haber corrido el circuito completo con credenciales de prueba, porque el código del webhook nunca se ejecutó contra el servicio real. Y en un sistema con emisión fiscal, no habilitaría producción si el único adaptador disponible es el de homologación: el bloqueo tiene que ser estructural, por diseño, no una casilla de un checklist."
+      q: "¿Qué parte de un sistema no pondrías en producción hasta haberla ejercido completa, y por qué?",
+      a: "No tocaría pagos reales ni facturación hasta haber corrido el circuito completo con credenciales de prueba, porque el código del webhook nunca se ejecutó contra el servicio real, y un webhook sin ejercitar es una teoría con forma de código. Y en un sistema con emisión fiscal, no habilitaría producción si el único adaptador disponible es el de homologación: el bloqueo tiene que ser estructural, por diseño, no una casilla de un checklist."
     },
     en: {
-      q: "What would you not put into production yet?",
-      a: "I would not touch real payments or invoicing until the full circuit had run with test credentials, because the webhook code has never executed against the real service. And in a system with tax issuance, I would not enable production if the only adapter available is the test one: the block has to be structural, by design, not a checkbox on a list."
+      q: "Which part of a system would you keep out of production until you had exercised it end to end, and why?",
+      a: "I would not touch real payments or invoicing until the full circuit had run with test credentials, because the webhook code has never executed against the real service, and an unexercised webhook is a theory shaped like code, not code. And in a system with tax issuance, I would not enable production if the only adapter available is the test one: the block has to be structural, by design, not a checkbox on a list."
     }
   },
   {
