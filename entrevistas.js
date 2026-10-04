@@ -2143,9 +2143,11 @@ const app = {
     this.escribirAtajoIniciar();
   },
 
-  /* Enter o Espacio arrancan la sesión de repaso. */
+  /* Enter arranca la sesión de repaso, con la misma salvedad: si el foco está
+     en un campo de escritura, el Enter es un salto de línea, no un comando. */
   escribirAtajoIniciar() {
     document.addEventListener("keydown", (evento) => {
+      if (this.escribiendo()) return;
       if (evento.key === "Enter" && !estado.iniciado) {
         evento.preventDefault();
         this.iniciar();
@@ -2553,8 +2555,21 @@ const app = {
   },
 
   /* --- Atajos de teclado ------------------------------------------------- */
+
+  /* Un atajo no debe disparar cuando el foco está en un campo de escritura:
+     la barra espaciadora tiene que escribir un espacio, y la R tiene que
+     ser una letra más de la palabra que estás escribiendo. */
+  escribiendo() {
+    const el = document.activeElement;
+    if (!el) return false;
+    if (el.isContentEditable) return true;
+    return ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(el.tagName);
+  },
+
   escribirAtajos() {
     document.addEventListener("keydown", (evento) => {
+      if (this.escribiendo()) return;
+
       if (evento.key === " ") {
         evento.preventDefault();
         this.siguiente();

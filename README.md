@@ -32,7 +32,9 @@ Pasos:
 5. Escribí lo que responderías de verdad y presioná **Comprobar**.
 
 Atajos: `Espacio` o `Siguiente` para otra pregunta, `Enter` para iniciar,
-`R` para reiniciar.
+`R` para reiniciar. Los atajos se desactivan mientras el cursor está en un
+campo de escritura, para que puedas escribir con espacios y con letras `r`
+sin que salte de pregunta o se reinicie la sesión.
 
 Las preguntas no se repiten hasta agotar el banco completo. Después se
 barajan de nuevo.
